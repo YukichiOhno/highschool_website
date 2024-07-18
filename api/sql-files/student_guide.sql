@@ -1,0 +1,13 @@
+CREATE TABLE IF NOT EXISTS STUDENT_GUIDE (
+	STUD_ID INTEGER UNSIGNED,
+    GUID_ID INTEGER UNSIGNED,
+    GUID_IDENTITY VARCHAR(20) NOT NULL,
+    PRIMARY KEY (STUD_ID, GUID_ID),
+    FOREIGN KEY (STUD_ID) REFERENCES STUDENT (STUD_ID) ON DELETE CASCADE,
+    FOREIGN KEY (GUID_ID) REFERENCES GUIDE (GUID_ID) ON DELETE CASCADE
+);
+
+/* notes
+a student can have many guides.
+a guide can guide many students (if a parent has 2 children in the same school)
+*/
