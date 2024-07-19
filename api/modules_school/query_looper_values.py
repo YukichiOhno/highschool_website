@@ -16,7 +16,7 @@ def insert_query_looper_values_1_table(table_name, required_array_names, require
     return query
 
 
-def update_query_looper_values_1_table(table_name, required_array_names, required_array_values, pk_name, entity_id): 
+def update_query_looper_values_1_table(table_name, required_array_names, required_array_values, pk_name, entity_id, iscomposite=False, pk_name_2=0, entity_id_2=0): 
     query = f"UPDATE {table_name.upper()}\n" \
             f"SET "
 
@@ -32,5 +32,8 @@ def update_query_looper_values_1_table(table_name, required_array_names, require
             query += ", "
 
     query += f"\nWHERE {pk_name} = {entity_id}"
+
+    if iscomposite:
+        query += f" AND {pk_name_2} = {entity_id_2}"
 
     return query

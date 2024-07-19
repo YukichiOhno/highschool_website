@@ -320,7 +320,7 @@ def delete_guide(guid_id):
 
 # STUDENT_GUIDE
 # add a relationship between a student and a guide
-@app.route("/api/student_guide", methods=["POST"])
+@app.route("/api/student_guide", methods=["POST", "PUT"])
 def post_student_guide():
     request_data = request.get_json()
     user_data = request_data.keys()
@@ -369,12 +369,52 @@ def post_student_guide():
         print(f"{terminal_error_statement} {e}")
         return failed_data_entry_statement
     
-    # setting up query: call insert_query_looper_values module
-    query = insert_query("student_guide", user_attributes_names, user_attributes_values)
-    print(f"{query}")
-    execute_query(connection, query)
-    print("post student_guide success")
-    return "post student_guide success"
+    # setting up query: call insert_query_looper_values module for either PUT or POST methods
+    if request.method == "POST":
+        query = insert_query("student_guide", user_attributes_names, user_attributes_values)
+        print(f"{query}")
+        execute_query(connection, query)
+        print("post student_guide success")
+        return "post student_guide success"
+    else:
+        query = update_query("student_guide", user_attributes_names, user_attributes_values, "STUD_ID", stud_id, iscomposite=True, pk_name_2="GUID_ID", entity_id_2=guid_id)
+        print(f"{query}")
+        execute_query(connection, query)
+        print("put student_guide success")
+        return "put student_guide success"
+    
+
+# delete an existing student_guide relationship table row
+@app.route("/api/student_guide", methods=["DELETE"])
+def delete_student_guide():
+    # get data and required debugging statements
+    failed_data_entry_statement = "delete_student_guide error. check terminal"
+    terminal_error_statement = "delete_student_guide error:"
+
+    print("\nprocessing delete_student_guide...")
+    stud_id = request.args.get("STUD_ID", type=int)
+    guid_id = request.args.get("GUID_ID", type=int)
+    sql = "SELECT * FROM STUDENT_GUIDE;"
+    student_guide_table = execute_read_query(connection, sql)
+
+    for i in range(len(student_guide_table) - 1, -1, -1):  # start, stop, step size
+        stud_id_to_delete = student_guide_table[i]["STUD_ID"]
+        guid_id_to_delete = student_guide_table[i]["GUID_ID"]
+        if (guid_id == guid_id_to_delete) and (stud_id == stud_id_to_delete):
+            pass
+            delete_query = f"DELETE FROM STUDENT_GUIDE WHERE STUD_ID = {stud_id} AND GUID_ID = {guid_id}"
+            execute_query(connection, delete_query)
+            check_sql = f"SELECT * FROM STUDENT_GUIDE WHERE STUD_ID = {stud_id} AND GUID_ID = {guid_id}"
+            check = execute_read_query(connection, check_sql)
+            print(check)
+            if check:
+                print(f"{terminal_error_statement} cannot delete student_guide: referenced by other entities in other table")
+                return failed_data_entry_statement
+            print("delete student_guide success")
+            return "delete student_guide success"
+
+    print(f"{terminal_error_statement} invalid id")
+    return failed_data_entry_statement
 
 
 # COURSE
