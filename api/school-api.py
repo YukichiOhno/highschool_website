@@ -549,4 +549,274 @@ def delete_course(course_id):
     return failed_data_entry_statement
 
 
+# SUPPLIER
+# retrieve supplier table information
+@app.route("/api/supplier", methods=["GET"])
+def get_supplier():
+    query = "SELECT * FROM SUPPLIER"
+    supplier_table = execute_read_query(connection, query)
+    return jsonify(supplier_table)
+
+
+# add a supplier to the supplier table
+@app.route("/api/supplier", methods=["POST"])
+def post_supplier():
+    # get data and required debugging statements
+    request_data = request.get_json()
+    user_data = request_data.keys()
+    failed_data_entry_statement = "post_supplier error. check terminal"
+    terminal_error_statement = "post_supplier error:"
+    
+    print("\nprocessing post_supplier...")
+    # If no keys and values are provided in the body in POSTMAN and throw error if PK is provided
+    verify_user_data = verify_initial_data("supplier", "SUPP_ID", user_data, terminal_error_statement)
+    print(verify_user_data)
+    if verify_user_data != "validation of initial user data success":
+        return failed_data_entry_statement
+    
+    # acquire necessary attributes for the table
+    required_attributes, allowed_attributes = entity_attributes_provider("supplier")
+    
+    # retrieve attributes provided by the user and perform validation
+    verify_attributes = verify_user_attributes(allowed_attributes, required_attributes, user_data, terminal_error_statement, post=True)
+    print(verify_attributes)
+    if verify_attributes != "validation of user provided data success":
+        return failed_data_entry_statement
+    
+    # validate and manipulate entered user attributes
+    try:
+        user_attributes_names = []
+        user_attributes_values = []
+
+        validate_attribute("SUPP_NAME", request_data, user_attributes_names, user_attributes_values, max=50)
+        validate_attribute("SUPP_PHONE", request_data, user_attributes_names, user_attributes_values, isphone=True, max=10)
+        validate_attribute("SUPP_EMAIL", request_data, user_attributes_names, user_attributes_values, max=50)
+        validate_attribute("SUPP_ADDRESS", request_data, user_attributes_names, user_attributes_values, max=150)
+        validate_attribute("SUPP_CITY", request_data, user_attributes_names, user_attributes_values, max=50)
+        validate_attribute("SUPP_TYPE", request_data, user_attributes_names, user_attributes_values, isarray=True, array=attribute_options("supp_type"))
+        validate_attribute("SUPP_CONT_START", request_data, user_attributes_names, user_attributes_values, isdate=True)
+        validate_attribute("SUPP_CONT_END", request_data, user_attributes_names, user_attributes_values, isdate=True)
+        
+    except ValueError as e:
+        print(f"{terminal_error_statement} {e}")
+        return failed_data_entry_statement
+    
+    # setting up query: call insert_query_looper_values module
+    query = insert_query("supplier", user_attributes_names, user_attributes_values)
+    print(f"{query}")
+    execute_query(connection, query)
+    print("post supplier success")
+    return "post supplier success"
+
+
+# update an existing supplier table row
+@app.route("/api/supplier/<int:supp_id>", methods=["PUT"])
+def put_supplier(supp_id):
+    # get data and required debugging statements
+    request_data = request.get_json()
+    user_data = request_data.keys()
+    failed_data_entry_statement = "put_supplier error. check terminal"
+    terminal_error_statement = "put_supplier error:"
+
+    print("\nprocessing put_supplier...")
+    # If no keys and values are provided in the body in POSTMAN and throw error if PK is provided
+    verify_user_data = verify_initial_data("supplier", "SUPP_ID", user_data, terminal_error_statement, update_entity=True, pk_value=supp_id)
+    print(verify_user_data)
+    if verify_user_data != "validation of initial user data success":
+        return failed_data_entry_statement
+    
+    # acquire necessary attributes for the table
+    required_attributes, allowed_attributes = entity_attributes_provider("supplier")
+    
+    # retrieve attributes provided by the user and perform validation
+    verify_attributes = verify_user_attributes(allowed_attributes, required_attributes, user_data, terminal_error_statement)
+    print(verify_attributes)
+    if verify_attributes != "validation of user provided data success":
+        return failed_data_entry_statement
+    
+    # validate and manipulate entered user attributes
+    try:
+        user_attributes_names = []
+        user_attributes_values = []
+
+        validate_attribute("SUPP_NAME", request_data, user_attributes_names, user_attributes_values, max=50)
+        validate_attribute("SUPP_PHONE", request_data, user_attributes_names, user_attributes_values, isphone=True, max=10)
+        validate_attribute("SUPP_EMAIL", request_data, user_attributes_names, user_attributes_values, max=50)
+        validate_attribute("SUPP_ADDRESS", request_data, user_attributes_names, user_attributes_values, max=150)
+        validate_attribute("SUPP_CITY", request_data, user_attributes_names, user_attributes_values, max=50)
+        validate_attribute("SUPP_TYPE", request_data, user_attributes_names, user_attributes_values, isarray=True, array=attribute_options("supp_type"))
+        validate_attribute("SUPP_CONT_START", request_data, user_attributes_names, user_attributes_values, isdate=True)
+        validate_attribute("SUPP_CONT_END", request_data, user_attributes_names, user_attributes_values, isdate=True)
+
+    except ValueError as e:
+        print(f"{terminal_error_statement} {e}")
+        return failed_data_entry_statement
+    
+    # setting up query: call update_query_looper_values module
+    query = update_query("supplier", user_attributes_names, user_attributes_values, "SUPP_ID", supp_id)
+    print(f"{query}")
+    execute_query(connection, query)
+    print("put supplier success")
+    return "put supplier success"
+
+
+# delete an existing supplier table row
+@app.route("/api/supplier/<int:supp_id>", methods=["DELETE"])
+def delete_supplier(supp_id):
+    # get data and required debugging statements
+    failed_data_entry_statement = "delete_supplier error. check terminal"
+    terminal_error_statement = "delete_supplier error:"
+
+    print("\nprocessing delete_supplier...")
+    sql = "SELECT * FROM SUPPLIER;"
+    supplier_table = execute_read_query(connection, sql)  
+
+    for i in range(len(supplier_table) - 1, -1, -1):  # start, stop, step size
+        id_to_delete = supplier_table[i]["SUPP_ID"]
+        if supp_id == id_to_delete:
+            delete_query = f"DELETE FROM SUPPLIER WHERE SUPP_ID = {supp_id}"
+            execute_query(connection, delete_query)
+            check_sql = f"SELECT * FROM SUPPLIER WHERE SUPP_ID = {supp_id}"
+            check = execute_read_query(connection, check_sql)
+            print(check)
+            if check:
+                print(f"{terminal_error_statement} cannot delete supplier: referenced by other entities in other table")
+                return failed_data_entry_statement
+            print("delete supplier success")
+            return "delete supplier success"
+
+    print(f"{terminal_error_statement} invalid id")
+    return failed_data_entry_statement
+
+
+# DEPARTMENT
+# retrieve course table information
+@app.route("/api/department", methods=["GET"])
+def get_department():
+    query = "SELECT * FROM DEPARTMENT"
+    department_table = execute_read_query(connection, query)
+    return jsonify(department_table)
+
+
+# add a department to the department table
+@app.route("/api/department", methods=["POST"])
+def post_department():
+    # get data and required debugging statements
+    request_data = request.get_json()
+    user_data = request_data.keys()
+    failed_data_entry_statement = "post_department error. check terminal"
+    terminal_error_statement = "post_department error:"
+    
+    print("\nprocessing post_department...")
+    # If no keys and values are provided in the body in POSTMAN and throw error if PK is provided
+    verify_user_data = verify_initial_data("department", "DEPT_CODE", user_data, terminal_error_statement)
+    print(verify_user_data)
+    if verify_user_data != "validation of initial user data success":
+        return failed_data_entry_statement
+    
+    # acquire necessary attributes for the table
+    required_attributes, allowed_attributes = entity_attributes_provider("department")
+    
+    # retrieve attributes provided by the user and perform validation
+    verify_attributes = verify_user_attributes(allowed_attributes, required_attributes, user_data, terminal_error_statement, post=True)
+    print(verify_attributes)
+    if verify_attributes != "validation of user provided data success":
+        return failed_data_entry_statement
+    
+    # validate and manipulate entered user attributes
+    try:
+        user_attributes_names = []
+        user_attributes_values = []
+
+        validate_attribute("DEPT_NAME", request_data, user_attributes_names, user_attributes_values, max=50)
+        validate_attribute("DEPT_DESC", request_data, user_attributes_names, user_attributes_values, max=65535)
+        validate_attribute("EMP_ID", request_data, user_attributes_names, user_attributes_values, vartype=int, isforeignkey=True, foreign_entity_name="department", foreign_key_name="EMP_ID")
+        
+    except ValueError as e:
+        print(f"{terminal_error_statement} {e}")
+        return failed_data_entry_statement
+    
+    # setting up query: call insert_query_looper_values module
+    query = insert_query("department", user_attributes_names, user_attributes_values)
+    print(f"{query}")
+    execute_query(connection, query)
+    print("post department success")
+    return "post department success"
+
+
+# update an existing department table row
+@app.route("/api/department/<int:dept_code>", methods=["PUT"])
+def put_department(dept_code):
+    # get data and required debugging statements
+    request_data = request.get_json()
+    user_data = request_data.keys()
+    failed_data_entry_statement = "put_department error. check terminal"
+    terminal_error_statement = "put_department error:"
+
+    print("\nprocessing put_department...")
+    # If no keys and values are provided in the body in POSTMAN and throw error if PK is provided
+    verify_user_data = verify_initial_data("department", "DEPT_CODE", user_data, terminal_error_statement, update_entity=True, pk_value=dept_code)
+    print(verify_user_data)
+    if verify_user_data != "validation of initial user data success":
+        return failed_data_entry_statement
+    
+    # acquire necessary attributes for the table
+    required_attributes, allowed_attributes = entity_attributes_provider("department")
+    
+    # retrieve attributes provided by the user and perform validation
+    verify_attributes = verify_user_attributes(allowed_attributes, required_attributes, user_data, terminal_error_statement)
+    print(verify_attributes)
+    if verify_attributes != "validation of user provided data success":
+        return failed_data_entry_statement
+    
+    # validate and manipulate entered user attributes
+    try:
+        user_attributes_names = []
+        user_attributes_values = []
+
+        validate_attribute("DEPT_NAME", request_data, user_attributes_names, user_attributes_values, max=50)
+        validate_attribute("DEPT_DESC", request_data, user_attributes_names, user_attributes_values, max=65535)
+        validate_attribute("EMP_ID", request_data, user_attributes_names, user_attributes_values, vartype=int, isforeignkey=True, foreign_entity_name="department", foreign_key_name="EMP_ID")
+
+    except ValueError as e:
+        print(f"{terminal_error_statement} {e}")
+        return failed_data_entry_statement
+    
+    # setting up query: call update_query_looper_values module
+    query = update_query("department", user_attributes_names, user_attributes_values, "DEPT_CODE", dept_code)
+    print(f"{query}")
+    execute_query(connection, query)
+    print("put department success")
+    return "put department success"
+
+
+# delete an existing department table row
+@app.route("/api/department/<int:dept_code>", methods=["DELETE"])
+def delete_department(dept_code):
+    # get data and required debugging statements
+    failed_data_entry_statement = "delete_department error. check terminal"
+    terminal_error_statement = "delete_department error:"
+
+    print("\nprocessing delete_department...")
+    sql = "SELECT * FROM DEPARTMENT;"
+    department_table = execute_read_query(connection, sql)  
+
+    for i in range(len(department_table) - 1, -1, -1):  # start, stop, step size
+        id_to_delete = department_table[i]["DEPT_CODE"]
+        if dept_code == id_to_delete:
+            delete_query = f"DELETE FROM DEPARTMENT WHERE DEPT_CODE = {dept_code}"
+            execute_query(connection, delete_query)
+            check_sql = f"SELECT * FROM DEPARTMENT WHERE DEPT_CODE = {dept_code}"
+            check = execute_read_query(connection, check_sql)
+            print(check)
+            if check:
+                print(f"{terminal_error_statement} cannot delete department: referenced by other entities in other table")
+                return failed_data_entry_statement
+            print("delete department success")
+            return "delete department success"
+
+    print(f"{terminal_error_statement} invalid id")
+    return failed_data_entry_statement
+
+
 app.run(threaded=True, port=5001)

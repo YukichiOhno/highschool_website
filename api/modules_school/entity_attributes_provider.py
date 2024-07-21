@@ -36,6 +36,22 @@ def entity_attributes_provider(entity):
                                "COURSE_DESC",
                                "COURSE_TYPE",
                                "COURSE_GRADE_LVL"]
+        
+    elif entity == "supplier":
+        required_attributes = ["SUPP_NAME",
+                               "SUPP_PHONE",
+                               "SUPP_EMAIL",
+                               "SUPP_ADDRESS",
+                               "SUPP_CITY",
+                               "SUPP_TYPE",
+                               "SUPP_CONT_START",
+                               "SUPP_CONT_END"]
+        
+    elif entity == "department":
+        required_attributes = ["DEPT_NAME",
+                               "DEPT_DESC"]
+        
+        optional_attributes = ["EMP_ID"]
 
     allowed_attributes = required_attributes + optional_attributes
     return required_attributes, allowed_attributes
@@ -66,6 +82,14 @@ def attribute_options(attribute_name):
                              "aunt",
                              "cousin",
                              "godparent"]
+        
+    elif attribute_name == "supp_type":
+        acceptable_values = ["stationery",
+                             "electronics",
+                             "furniture",
+                             "books",
+                             "cleaning supplies",
+                             "meal"]
         
     return acceptable_values
 
