@@ -690,7 +690,7 @@ def delete_supplier(supp_id):
 
 
 # DEPARTMENT
-# retrieve course table information
+# retrieve department table information
 @app.route("/api/department", methods=["GET"])
 def get_department():
     query = "SELECT * FROM DEPARTMENT"
@@ -730,7 +730,7 @@ def post_department():
 
         validate_attribute("DEPT_NAME", request_data, user_attributes_names, user_attributes_values, max=50)
         validate_attribute("DEPT_DESC", request_data, user_attributes_names, user_attributes_values, max=65535)
-        validate_attribute("EMP_ID", request_data, user_attributes_names, user_attributes_values, vartype=int, isforeignkey=True, foreign_entity_name="department", foreign_key_name="EMP_ID")
+        validate_attribute("EMP_ID", request_data, user_attributes_names, user_attributes_values, vartype=int, isforeignkey=True, foreign_entity_name="employee", foreign_key_name="EMP_ID", isonetoone=True, entity_name="department")
         
     except ValueError as e:
         print(f"{terminal_error_statement} {e}")
@@ -776,7 +776,7 @@ def put_department(dept_code):
 
         validate_attribute("DEPT_NAME", request_data, user_attributes_names, user_attributes_values, max=50)
         validate_attribute("DEPT_DESC", request_data, user_attributes_names, user_attributes_values, max=65535)
-        validate_attribute("EMP_ID", request_data, user_attributes_names, user_attributes_values, vartype=int, isforeignkey=True, foreign_entity_name="employee", foreign_key_name="EMP_ID")
+        validate_attribute("EMP_ID", request_data, user_attributes_names, user_attributes_values, vartype=int, isforeignkey=True, foreign_entity_name="employee", foreign_key_name="EMP_ID", isonetoone=True, entity_name="department")
 
     except ValueError as e:
         print(f"{terminal_error_statement} {e}")
@@ -820,7 +820,7 @@ def delete_department(dept_code):
 
 
 # JOB POSITION
-# retrieve course table information
+# retrieve job position table information
 @app.route("/api/job_position", methods=["GET"])
 def get_job_position():
     query = "SELECT * FROM JOB_POSITION"
@@ -954,7 +954,7 @@ def delete_job_position(pos_code):
 
 
 # EMPLOYEE
-# retrieve course table information
+# retrieve employee table information
 @app.route("/api/employee", methods=["GET"])
 def get_employee():
     query = "SELECT * FROM EMPLOYEE"
@@ -1092,6 +1092,140 @@ def delete_employee(emp_id):
                 return failed_data_entry_statement
             print("delete employee success")
             return "delete employee success"
+
+    print(f"{terminal_error_statement} invalid id")
+    return failed_data_entry_statement
+
+
+# CLASS
+# retrieve class table information
+@app.route("/api/class", methods=["GET"])
+def get_class():
+    query = "SELECT * FROM CLASS"
+    class_table = execute_read_query(connection, query)
+    return jsonify(class_table)
+
+
+# add a class to the class table
+@app.route("/api/class", methods=["POST"])
+def post_class():
+    # get data and required debugging statements
+    request_data = request.get_json()
+    user_data = request_data.keys()
+    failed_data_entry_statement = "post_class error. check terminal"
+    terminal_error_statement = "post_class error:"
+    
+    print("\nprocessing post_class...")
+    # If no keys and values are provided in the body in POSTMAN and throw error if PK is provided
+    verify_user_data = verify_initial_data("class", "CLASS_ID", user_data, terminal_error_statement)
+    print(verify_user_data)
+    if verify_user_data != "validation of initial user data success":
+        return failed_data_entry_statement
+    
+    # acquire necessary attributes for the table
+    required_attributes, allowed_attributes = entity_attributes_provider("class")
+    
+    # retrieve attributes provided by the user and perform validation
+    verify_attributes = verify_user_attributes(allowed_attributes, required_attributes, user_data, terminal_error_statement, post=True)
+    print(verify_attributes)
+    if verify_attributes != "validation of user provided data success":
+        return failed_data_entry_statement
+    
+    # validate and manipulate entered user attributes
+    try:
+        user_attributes_names = []
+        user_attributes_values = []
+
+        validate_attribute("CLASS_CAPACITY", request_data, user_attributes_names, user_attributes_values, vartype=int, max=200)
+        validate_attribute("CLASS_ROOM", request_data, user_attributes_names, user_attributes_values, vartype=int, max=3)
+        validate_attribute("CLASS_BLDG_ROOM", request_data, user_attributes_names, user_attributes_values, vartype=int, max=1)
+        validate_attribute("EMP_ID", request_data, user_attributes_names, user_attributes_values, vartype=int, isforeignkey=True, foreign_entity_name="employee", foreign_key_name="EMP_ID")
+        validate_attribute("COURSE_ID", request_data, user_attributes_names, user_attributes_values, vartype=int, isforeignkey=True, foreign_entity_name="course", foreign_key_name="COURSE_ID")
+        
+    except ValueError as e:
+        print(f"{terminal_error_statement} {e}")
+        return failed_data_entry_statement
+    
+    # setting up query: call insert_query_looper_values module
+    query = insert_query("class", user_attributes_names, user_attributes_values)
+    print(f"{query}")
+    execute_query(connection, query)
+    print("post class success")
+    return "post class success"
+
+
+# update an existing class table row
+@app.route("/api/class/<int:class_id>", methods=["PUT"])
+def put_class(class_id):
+    # get data and required debugging statements
+    request_data = request.get_json()
+    user_data = request_data.keys()
+    failed_data_entry_statement = "put_class error. check terminal"
+    terminal_error_statement = "put_class error:"
+
+    print("\nprocessing put_class...")
+    # If no keys and values are provided in the body in POSTMAN and throw error if PK is provided
+    verify_user_data = verify_initial_data("class", "CLASS_ID", user_data, terminal_error_statement, update_entity=True, pk_value=class_id)
+    print(verify_user_data)
+    if verify_user_data != "validation of initial user data success":
+        return failed_data_entry_statement
+    
+    # acquire necessary attributes for the table
+    required_attributes, allowed_attributes = entity_attributes_provider("class")
+    
+    # retrieve attributes provided by the user and perform validation
+    verify_attributes = verify_user_attributes(allowed_attributes, required_attributes, user_data, terminal_error_statement)
+    print(verify_attributes)
+    if verify_attributes != "validation of user provided data success":
+        return failed_data_entry_statement
+    
+    # validate and manipulate entered user attributes
+    try:
+        user_attributes_names = []
+        user_attributes_values = []
+
+        validate_attribute("CLASS_CAPACITY", request_data, user_attributes_names, user_attributes_values, vartype=int, max=200)
+        validate_attribute("CLASS_ROOM", request_data, user_attributes_names, user_attributes_values, vartype=int, max=3)
+        validate_attribute("CLASS_BLDG_ROOM", request_data, user_attributes_names, user_attributes_values, vartype=int, max=1)
+        validate_attribute("EMP_ID", request_data, user_attributes_names, user_attributes_values, vartype=int, isforeignkey=True, foreign_entity_name="employee", foreign_key_name="EMP_ID")
+        validate_attribute("COURSE_ID", request_data, user_attributes_names, user_attributes_values, vartype=int, isforeignkey=True, foreign_entity_name="course", foreign_key_name="COURSE_ID")
+        
+    except ValueError as e:
+        print(f"{terminal_error_statement} {e}")
+        return failed_data_entry_statement
+    
+    # setting up query: call update_query_looper_values module
+    query = update_query("class", user_attributes_names, user_attributes_values, "CLASS_ID", class_id)
+    print(f"{query}")
+    execute_query(connection, query)
+    print("put class success")
+    return "put class success"
+
+
+# delete an existing class table row
+@app.route("/api/class/<int:class_id>", methods=["DELETE"])
+def delete_class(class_id):
+    # get data and required debugging statements
+    failed_data_entry_statement = "delete_class error. check terminal"
+    terminal_error_statement = "delete_class error:"
+
+    print("\nprocessing delete_class...")
+    sql = "SELECT * FROM CLASS;"
+    class_table = execute_read_query(connection, sql)  
+
+    for i in range(len(class_table) - 1, -1, -1):  # start, stop, step size
+        id_to_delete = class_table[i]["CLASS_ID"]
+        if class_id == id_to_delete:
+            delete_query = f"DELETE FROM CLASS WHERE CLASS_ID = {class_id}"
+            execute_query(connection, delete_query)
+            check_sql = f"SELECT * FROM CLASS WHERE CLASS_ID = {class_id}"
+            check = execute_read_query(connection, check_sql)
+            print(check)
+            if check:
+                print(f"{terminal_error_statement} cannot delete class: referenced by other entities in other table")
+                return failed_data_entry_statement
+            print("delete class success")
+            return "delete class success"
 
     print(f"{terminal_error_statement} invalid id")
     return failed_data_entry_statement

@@ -54,7 +54,7 @@ def verify_user_attributes(allowed_attributes, required_attributes, user_data, t
 
 
 # validate each attributes and their data types
-def validate_attribute(attribute_name, request_data, array_attribute_names, array_attribute_values, min=0, max=0, isinitial=False, isphone=False, isdate=False, vartype=str, hasminmax=False, isarray=False, array=[], isforeignkey=False, foreign_entity_name="", foreign_key_name=""):
+def validate_attribute(attribute_name, request_data, array_attribute_names, array_attribute_values, min=0, max=0, isinitial=False, isphone=False, isdate=False, vartype=str, hasminmax=False, isarray=False, array=[], isforeignkey=False, foreign_entity_name="", foreign_key_name="", isonetoone=False, entity_name=""):
     from modules_school.verify_date import is_valid_date
 
     if attribute_name in request_data:
@@ -75,19 +75,30 @@ def validate_attribute(attribute_name, request_data, array_attribute_names, arra
                 from modules_school.credentials_school import Creds
                 from modules_school.sql_helper_school import create_connection, execute_read_query
 
-                entity_name = foreign_entity_name.upper().strip()
+                foreign_entity_name = foreign_entity_name.upper().strip()
                 foreign_key_name = foreign_key_name.upper().strip()
 
                 my_creds = Creds
                 connection = create_connection(my_creds.connection_string, my_creds.user_name, my_creds.password, my_creds.database_name)
 
-                sql = f"SELECT * FROM {entity_name} WHERE {foreign_key_name} = {attribute_value}"
+                sql = f"SELECT * FROM {foreign_entity_name} WHERE {foreign_key_name} = {attribute_value}"
                 print(sql) 
                 table_row = execute_read_query(connection, sql)
                 print(table_row)
 
                 if not table_row:
-                    raise ValueError(f"{entity_name} with the value {foreign_key_name} of {attribute_value} does not exist")
+                    raise ValueError(f"{foreign_entity_name} with the value {foreign_key_name} of {attribute_value} does not exist")
+                
+                if isonetoone:
+                    entity_name = entity_name.upper().strip()
+
+                    sql = f"SELECT * FROM {entity_name} WHERE {foreign_key_name} = {attribute_value}"
+                    print(sql) 
+                    table_row = execute_read_query(connection, sql)
+                    print(table_row)
+
+                    if len(table_row) >= 1:
+                        raise ValueError(f"this {entity_name} already has formed one (maximum) relationship")
                     
             array_attribute_names.append(attribute_name)
             array_attribute_values.append(attribute_value)
