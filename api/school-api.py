@@ -776,7 +776,7 @@ def put_department(dept_code):
 
         validate_attribute("DEPT_NAME", request_data, user_attributes_names, user_attributes_values, max=50)
         validate_attribute("DEPT_DESC", request_data, user_attributes_names, user_attributes_values, max=65535)
-        validate_attribute("EMP_ID", request_data, user_attributes_names, user_attributes_values, vartype=int, isforeignkey=True, foreign_entity_name="department", foreign_key_name="EMP_ID")
+        validate_attribute("EMP_ID", request_data, user_attributes_names, user_attributes_values, vartype=int, isforeignkey=True, foreign_entity_name="employee", foreign_key_name="EMP_ID")
 
     except ValueError as e:
         print(f"{terminal_error_statement} {e}")
@@ -814,6 +814,140 @@ def delete_department(dept_code):
                 return failed_data_entry_statement
             print("delete department success")
             return "delete department success"
+
+    print(f"{terminal_error_statement} invalid id")
+    return failed_data_entry_statement
+
+
+# JOB POSITION
+# retrieve course table information
+@app.route("/api/job_position", methods=["GET"])
+def get_job_position():
+    query = "SELECT * FROM JOB_POSITION"
+    job_position_table = execute_read_query(connection, query)
+    return jsonify(job_position_table)
+
+
+# add a job position to the job position table
+@app.route("/api/job_position", methods=["POST"])
+def post_job_position():
+    # get data and required debugging statements
+    request_data = request.get_json()
+    user_data = request_data.keys()
+    failed_data_entry_statement = "post_job_position error. check terminal"
+    terminal_error_statement = "post_job_position error:"
+    
+    print("\nprocessing post_job_position...")
+    # If no keys and values are provided in the body in POSTMAN and throw error if PK is provided
+    verify_user_data = verify_initial_data("job_position", "POS_CODE", user_data, terminal_error_statement)
+    print(verify_user_data)
+    if verify_user_data != "validation of initial user data success":
+        return failed_data_entry_statement
+    
+    # acquire necessary attributes for the table
+    required_attributes, allowed_attributes = entity_attributes_provider("job_position")
+    
+    # retrieve attributes provided by the user and perform validation
+    verify_attributes = verify_user_attributes(allowed_attributes, required_attributes, user_data, terminal_error_statement, post=True)
+    print(verify_attributes)
+    if verify_attributes != "validation of user provided data success":
+        return failed_data_entry_statement
+    
+    # validate and manipulate entered user attributes
+    try:
+        user_attributes_names = []
+        user_attributes_values = []
+
+        validate_attribute("POS_TITLE", request_data, user_attributes_names, user_attributes_values, max=25)
+        validate_attribute("POS_DESC", request_data, user_attributes_names, user_attributes_values, max=65535)
+        validate_attribute("POS_SALARY", request_data, user_attributes_names, user_attributes_values, vartype=float, max=999999.99, hasminmax=True)
+        validate_attribute("POS_REQ", request_data, user_attributes_names, user_attributes_values, max=65535)
+        validate_attribute("DEPT_CODE", request_data, user_attributes_names, user_attributes_values, vartype=int, isforeignkey=True, foreign_entity_name="department", foreign_key_name="DEPT_CODE")
+        
+    except ValueError as e:
+        print(f"{terminal_error_statement} {e}")
+        return failed_data_entry_statement
+    
+    # setting up query: call insert_query_looper_values module
+    query = insert_query("job_position", user_attributes_names, user_attributes_values)
+    print(f"{query}")
+    execute_query(connection, query)
+    print("post job_position success")
+    return "post job_position success"
+
+
+# update an existing job position table row
+@app.route("/api/job_position/<int:pos_code>", methods=["PUT"])
+def put_job_position(pos_code):
+    # get data and required debugging statements
+    request_data = request.get_json()
+    user_data = request_data.keys()
+    failed_data_entry_statement = "put_job_position error. check terminal"
+    terminal_error_statement = "put_job_position error:"
+
+    print("\nprocessing put_job_position...")
+    # If no keys and values are provided in the body in POSTMAN and throw error if PK is provided
+    verify_user_data = verify_initial_data("job_position", "POS_CODE", user_data, terminal_error_statement, update_entity=True, pk_value=pos_code)
+    print(verify_user_data)
+    if verify_user_data != "validation of initial user data success":
+        return failed_data_entry_statement
+    
+    # acquire necessary attributes for the table
+    required_attributes, allowed_attributes = entity_attributes_provider("job_position")
+    
+    # retrieve attributes provided by the user and perform validation
+    verify_attributes = verify_user_attributes(allowed_attributes, required_attributes, user_data, terminal_error_statement)
+    print(verify_attributes)
+    if verify_attributes != "validation of user provided data success":
+        return failed_data_entry_statement
+    
+    # validate and manipulate entered user attributes
+    try:
+        user_attributes_names = []
+        user_attributes_values = []
+
+        validate_attribute("POS_TITLE", request_data, user_attributes_names, user_attributes_values, max=25)
+        validate_attribute("POS_DESC", request_data, user_attributes_names, user_attributes_values, max=65535)
+        validate_attribute("POS_SALARY", request_data, user_attributes_names, user_attributes_values, vartype=float, max=999999.99, hasminmax=True)
+        validate_attribute("POS_REQ", request_data, user_attributes_names, user_attributes_values, max=65535)
+        validate_attribute("DEPT_CODE", request_data, user_attributes_names, user_attributes_values, vartype=int, isforeignkey=True, foreign_entity_name="department", foreign_key_name="DEPT_CODE")
+
+    except ValueError as e:
+        print(f"{terminal_error_statement} {e}")
+        return failed_data_entry_statement
+    
+    # setting up query: call update_query_looper_values module
+    query = update_query("job_position", user_attributes_names, user_attributes_values, "POS_CODE", pos_code)
+    print(f"{query}")
+    execute_query(connection, query)
+    print("put job_position success")
+    return "put job_position success"
+
+
+# delete an existing job_position table row
+@app.route("/api/job_position/<int:pos_code>", methods=["DELETE"])
+def delete_job_position(pos_code):
+    # get data and required debugging statements
+    failed_data_entry_statement = "delete_job_position error. check terminal"
+    terminal_error_statement = "delete_job_position error:"
+
+    print("\nprocessing delete_job_position...")
+    sql = "SELECT * FROM JOB_POSITION;"
+    job_position_table = execute_read_query(connection, sql)  
+
+    for i in range(len(job_position_table) - 1, -1, -1):  # start, stop, step size
+        id_to_delete = job_position_table[i]["POS_CODE"]
+        if pos_code == id_to_delete:
+            delete_query = f"DELETE FROM JOB_POSITION WHERE POS_CODE = {pos_code}"
+            execute_query(connection, delete_query)
+            check_sql = f"SELECT * FROM JOB_POSITION WHERE POS_CODE = {pos_code}"
+            check = execute_read_query(connection, check_sql)
+            print(check)
+            if check:
+                print(f"{terminal_error_statement} cannot delete job_position: referenced by other entities in other table")
+                return failed_data_entry_statement
+            print("delete job_position success")
+            return "delete job_position success"
 
     print(f"{terminal_error_statement} invalid id")
     return failed_data_entry_statement
