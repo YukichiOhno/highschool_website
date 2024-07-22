@@ -14,6 +14,8 @@ ADD CONSTRAINT POS_TITLE UNIQUE (POS_TITLE);
 
 CREATE INDEX POS_SALARY ON POSITION (POS_SALARY);
 
+RENAME TABLE `POSITION` TO `JOB_POSITION`;
+
 /* notes
 a position name cannot repeat; therefore a unqiue constraint is placed.
 */

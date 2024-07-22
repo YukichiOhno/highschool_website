@@ -61,6 +61,19 @@ def entity_attributes_provider(entity):
     
         optional_attributes = ["POS_REQ"]
 
+    elif entity == "employee":
+        required_attributes = ["EMP_FNAME",
+                               "EMP_LNAME",
+                               "EMP_DOB",
+                               "EMP_ADDRESS",
+                               "EMP_CITY",
+                               "EMP_PHONE",
+                               "EMP_EMAIL",
+                               "EMP_EMPLOY_DATE"]
+        
+        optional_attributes = ["EMP_INITIAL",
+                               "POS_CODE"]
+
     allowed_attributes = required_attributes + optional_attributes
     return required_attributes, allowed_attributes
 
