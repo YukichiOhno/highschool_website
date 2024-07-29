@@ -225,5 +225,63 @@ def get_budget_route():
     from modules_school.routes.budget.get_budget import get_budget
     return get_budget(connection)
 
+@app.route("/api/budget", methods=["POST"])
+def post_budget_route():
+    from modules_school.routes.budget.post_budget import post_budget
+    return post_budget(connection)
+
+@app.route("/api/budget/<int:bud_id>", methods=["PUT"])
+def put_budget_route(bud_id):
+    from modules_school.routes.budget.put_budget import put_budget
+    return put_budget(connection, bud_id)
+
+@app.route("/api/budget/<int:bud_id>", methods=["DELETE"])
+def delete_budget_route(bud_id):
+    from modules_school.routes.budget.delete_budget import delete_budget
+    return delete_budget(connection, bud_id)
+
+
+# INVENTORY
+@app.route("/api/inventory", methods=["GET"])
+def get_inventory_route():
+    from modules_school.routes.inventory.get_inventory import get_inventory
+    return get_inventory(connection)
+
+@app.route("/api/inventory", methods=["POST"])
+def post_inventory_route():
+    from modules_school.routes.inventory.post_inventory import post_inventory
+    return post_inventory(connection)
+
+@app.route("/api/inventory/<int:invt_code>", methods=["PUT"])
+def put_inventory_route(invt_code):
+    from modules_school.routes.inventory.put_inventory import put_inventory
+    return put_inventory(connection, invt_code)
+
+@app.route("/api/inventory/<int:invt_code>", methods=["DELETE"])
+def delete_inventory_route(invt_code):
+    from modules_school.routes.inventory.delete_inventory import delete_inventory
+    return delete_inventory(connection, invt_code)
+
+
+# ITEM
+@app.route("/api/item", methods=["GET"])
+def get_item_route():
+    from modules_school.routes.item.get_item import get_item
+    return get_item(connection)
+
+@app.route("/api/item", methods=["POST"])
+def post_item_route():
+    from modules_school.routes.item.post_item import post_item
+    return post_item(connection)
+
+@app.route("/api/item/<int:item_id>", methods=["PUT"])
+def put_item_route(item_id):
+    from modules_school.routes.item.put_item import put_item
+    return put_item(connection, item_id)
+
+@app.route("/api/item/<int:item_id>", methods=["DELETE"])
+def delete_item_route(item_id):
+    from modules_school.routes.item.delete_item import delete_item
+    return delete_item(connection, item_id)
 
 app.run(threaded=True, port=5002)

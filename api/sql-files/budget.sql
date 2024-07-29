@@ -21,3 +21,6 @@ once a budget is expired, budget allocation and remaining will cease to update
 ALTER TABLE BUDGET
 MODIFY BUD_REMAIN DECIMAL(9, 2) NULL;
 
+ALTER TABLE BUDGET
+MODIFY BUD_TYPE VARCHAR(50) NOT NULL;
+

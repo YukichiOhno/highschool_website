@@ -95,6 +95,20 @@ def entity_attributes_provider(entity):
                                "BUD_APPROVAL_DATE",
                                "BUD_EXP_DATE",
                                "DEPT_CODE"]
+        
+    elif entity == "inventory":
+        required_attributes = ["INVT_NAME",
+                               "INVT_DESC",
+                               "INVT_CATEGORY",
+                               "INVT_QTY"]
+        
+        optional_attributes = ["INVT_EXP_DATE"]
+
+    elif entity == "item":
+        required_attributes = ["ITEM_QTY",
+                               "ROOM_NUM",
+                               "DEPT_CODE",
+                               "INVT_CODE"]
 
 
     allowed_attributes = required_attributes + optional_attributes
@@ -149,6 +163,23 @@ def attribute_options(attribute_name):
                              "transportation",
                              "special programs",
                              "events and activities"]
+        
+    elif attribute_name == "invt_category":
+        acceptable_values = ["office supply",
+                             "classroom supply",
+                             "art supply",
+                             "science equipment",
+                             "sports equipment",
+                             "technology",
+                             "furniture",
+                             "educational material",
+                             "cleaning supply",
+                             "cafeteria supply",
+                             "maintenance equipment",
+                             "first aid and safety equipment",
+                             "event supply",
+                             "musical instrument",
+                             "miscellaneous"]
         
     return acceptable_values
 

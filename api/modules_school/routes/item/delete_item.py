@@ -8,29 +8,29 @@ from modules_school.entity_attributes_provider import entity_attributes_provider
 from modules_school.verify_user_attributes import verify_user_attributes, verify_initial_data, validate_attribute, validate_associative_table
 
 
-# delete an existing budget entity
-def delete_budget(connection, bud_id):
+# delete an existing item entity
+def delete_item(connection, item_id):
     # get data and required debugging statements
-    failed_data_entry_statement = "delete_budget error. check terminal"
-    terminal_error_statement = "delete_budget error:"
+    failed_data_entry_statement = "delete_item error. check terminal"
+    terminal_error_statement = "delete_item error:"
 
-    print("\nprocessing delete_budget...")
-    sql = "SELECT * FROM BUDGET;"
-    budget_table = execute_read_query(connection, sql)  
+    print("\nprocessing delete_item...")
+    sql = "SELECT * FROM ITEM;"
+    item_table = execute_read_query(connection, sql)
 
-    for i in range(len(budget_table) - 1, -1, -1):  # start, stop, step size
-        id_to_delete = budget_table[i]["BUD_ID"]
-        if bud_id == id_to_delete:
-            delete_query = f"DELETE FROM BUDGET WHERE BUD_ID = {bud_id}"
+    for i in range(len(item_table) - 1, -1, -1):  # start, stop, step size
+        id_to_delete = item_table[i]["ITEM_ID"]
+        if item_id == id_to_delete:
+            delete_query = f"DELETE FROM ITEM WHERE ITEM_ID = {item_id}"
             execute_query(connection, delete_query)
-            check_sql = f"SELECT * FROM BUDGET WHERE BUD_ID = {bud_id}"
+            check_sql = f"SELECT * FROM ITEM WHERE ITEM_ID = {item_id}"
             check = execute_read_query(connection, check_sql)
             print(check)
             if check:
-                print(f"{terminal_error_statement} cannot delete budget: referenced by other entities in other table")
+                print(f"{terminal_error_statement} cannot delete item: referenced by other entities in other table")
                 return failed_data_entry_statement
-            print("delete budget success")
-            return "delete budget success"
+            print("delete item success")
+            return "delete item success"
 
     print(f"{terminal_error_statement} invalid id")
     return failed_data_entry_statement
