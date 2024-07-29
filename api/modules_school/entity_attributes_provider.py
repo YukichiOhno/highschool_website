@@ -72,7 +72,7 @@ def entity_attributes_provider(entity):
                                "EMP_EMPLOY_DATE"]
         
         optional_attributes = ["EMP_INITIAL",
-                               "POS_CODE"],
+                               "POS_CODE"]
     
     elif entity == "class":
         required_attributes = ["CLASS_CAPACITY",
@@ -81,6 +81,21 @@ def entity_attributes_provider(entity):
         optional_attributes = ["CLASS_ROOM",
                                "CLASS_BLDG_ROOM",
                                "EMP_ID"]
+        
+    elif entity == "enrollment":
+        required_attributes = ["ENROLL_STATUS",
+                               "ENROLL_DATE"]
+        
+        optional_attributes = ["ENROLL_SCORE"]
+
+    elif entity == "budget":
+        required_attributes = ["BUD_TYPE",
+                               "BUD_DESC",
+                               "BUD_ALLOCATED",
+                               "BUD_APPROVAL_DATE",
+                               "BUD_EXP_DATE",
+                               "DEPT_CODE"]
+
 
     allowed_attributes = required_attributes + optional_attributes
     return required_attributes, allowed_attributes
@@ -119,6 +134,21 @@ def attribute_options(attribute_name):
                              "books",
                              "cleaning supplies",
                              "meal"]
+        
+    elif attribute_name == "enroll_status":
+        acceptable_values = ["enrolled",
+                             "pending",
+                             "dropped"]
+        
+    elif attribute_name == "bud_type":
+        acceptable_values = ["academic",
+                             "extracurricular activities",
+                             "facilities and maintenance",
+                             "administrative",
+                             "student services",
+                             "transportation",
+                             "special programs",
+                             "events and activities"]
         
     return acceptable_values
 

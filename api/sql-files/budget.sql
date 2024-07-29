@@ -17,3 +17,7 @@ CREATE TABLE IF NOT EXISTS BUDGET (
 a budget may not be allocated at less than $0
 once a budget is expired, budget allocation and remaining will cease to update
 */
+
+ALTER TABLE BUDGET
+MODIFY BUD_REMAIN DECIMAL(9, 2) NULL;
+
