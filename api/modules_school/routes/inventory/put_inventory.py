@@ -50,6 +50,11 @@ def put_inventory(connection, invt_code):
     # setting up query: call update_query_looper_values module
     query = update_query("inventory", user_attributes_names, user_attributes_values, "INVT_CODE", invt_code)
     print(f"{query}")
-    execute_query(connection, query)
+    
+    try:
+        execute_query(connection, query)
+    except Exception as e:
+        return f"value occured during executing the query: {e}"
+    
     print("put inventory success")
     return "put inventory success"

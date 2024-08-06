@@ -50,6 +50,11 @@ def post_job_position(connection):
     # setting up query: call insert_query_looper_values module
     query = insert_query("job_position", user_attributes_names, user_attributes_values)
     print(f"{query}")
-    execute_query(connection, query)
+    
+    try:
+        execute_query(connection, query)
+    except Exception as e:
+        return f"value occured during executing the query: {e}"
+    
     print("post job_position success")
     return "post job_position success"

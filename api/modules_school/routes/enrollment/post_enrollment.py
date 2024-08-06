@@ -42,7 +42,10 @@ def post_enrollment(connection):
     required_attributes, allowed_attributes = entity_attributes_provider("enrollment")
 
     # retrieve attributes provided by the user and perform validation
-    verify_attributes = verify_user_attributes(allowed_attributes, required_attributes, user_data, terminal_error_statement, post=True)
+    if request.method == "POST":
+        verify_attributes = verify_user_attributes(allowed_attributes, required_attributes, user_data, terminal_error_statement, post=True)
+    else:
+        verify_attributes = verify_user_attributes(allowed_attributes, required_attributes, user_data, terminal_error_statement)
     print(verify_attributes)
     if verify_attributes != "validation of user provided data success":
         return failed_data_entry_statement
@@ -52,7 +55,7 @@ def post_enrollment(connection):
         user_attributes_names = ["STUD_ID", "CLASS_ID"]
         user_attributes_values = [stud_id, class_id]
         validate_attribute("ENROLL_STATUS", request_data, user_attributes_names, user_attributes_values, isarray=True, array=attribute_options("enroll_status"))
-        validate_attribute("ENROLL_SCORE", request_data, user_attributes_names, user_attributes_values, vartype=int, max=150)
+        validate_attribute("ENROLL_SCORE", request_data, user_attributes_names, user_attributes_values, vartype=float, max=4)
         validate_attribute("ENROLL_DATE", request_data, user_attributes_names, user_attributes_values, isdate=True)
         
     except ValueError as e:
@@ -73,22 +76,45 @@ def post_enrollment(connection):
         if num_of_students < enrollment_capacity:
             query = insert_query("enrollment", user_attributes_names, user_attributes_values)
             print(f"{query}")
-            execute_query(connection, query)
+            
+            try:
+                execute_query(connection, query)
+            except Exception as e:
+                return f"value occured during executing the query: {e}"
+            
             print("post enrollment success")
             return "post enrollment success"
         else:
-            print("class capacity reached: cannot add this student to the class")
+            print("class capacity reached: cannot add this student to the class or the student may be enrolled in this class already")
             return failed_data_entry_statement
     else:
-        enroll_status = request_data["ENROLL_STATUS"]
-        print(enroll_status)
+        if "ENROLL_STATUS" in request_data:
+            enroll_status = request_data["ENROLL_STATUS"]
+            print(enroll_status)
 
-        if enroll_status == "enrolled":
-            print("put enrollment failed: cannot switch student to enrolled")
-            return "put enrollment failed"
+            if enroll_status == "enrolled":
+                print("put enrollment failed: cannot switch student to enrolled")
+                return "put enrollment failed"
+            else:
+                query = update_query("enrollment", user_attributes_names, user_attributes_values, "STUD_ID", stud_id, iscomposite=True, pk_name_2="CLASS_ID", entity_id_2=class_id)
+                print(f"{query}")
+                
+                try:
+                    execute_query(connection, query)
+                except Exception as e:
+                    return f"value occured during executing the query: {e}"
+        
+                print("put enrollment success")
+                return "put enrollment success"
         else:
             query = update_query("enrollment", user_attributes_names, user_attributes_values, "STUD_ID", stud_id, iscomposite=True, pk_name_2="CLASS_ID", entity_id_2=class_id)
             print(f"{query}")
-            execute_query(connection, query)
+
+            try:
+                execute_query(connection, query)
+            except Exception as e:
+                return f"value occured during executing the query: {e}"
+            
             print("put enrollment success")
             return "put enrollment success"
+        

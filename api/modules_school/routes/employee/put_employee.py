@@ -55,6 +55,11 @@ def put_employee(connection, emp_id):
     # setting up query: call update_query_looper_values module
     query = update_query("employee", user_attributes_names, user_attributes_values, "EMP_ID", emp_id)
     print(f"{query}")
-    execute_query(connection, query)
+    
+    try:
+        execute_query(connection, query)
+    except Exception as e:
+        return f"value occured during executing the query: {e}"
+    
     print("put employee success")
     return "put employee success"

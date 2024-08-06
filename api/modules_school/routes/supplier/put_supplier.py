@@ -53,6 +53,11 @@ def put_supplier(connection, supp_id):
     # setting up query: call update_query_looper_values module
     query = update_query("supplier", user_attributes_names, user_attributes_values, "SUPP_ID", supp_id)
     print(f"{query}")
-    execute_query(connection, query)
+    
+    try:
+        execute_query(connection, query)
+    except Exception as e:
+        return f"value occured during executing the query: {e}"
+    
     print("put supplier success")
     return "put supplier success"

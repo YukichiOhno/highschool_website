@@ -39,6 +39,7 @@ def put_course(connection, course_id):
 
         validate_attribute("COURSE_NAME", request_data, user_attributes_names, user_attributes_values, max=50)
         validate_attribute("COURSE_DESC", request_data, user_attributes_names, user_attributes_values, max=65535)
+        validate_attribute("COURSE_HRS", request_data, user_attributes_names, user_attributes_values, vartype=int, max=1)
         validate_attribute("COURSE_TYPE", request_data, user_attributes_names, user_attributes_values, isarray=True, array=attribute_options("course_type"))
         validate_attribute("COURSE_GRADE_LVL", request_data, user_attributes_names, user_attributes_values, min=9, max=12, vartype=int, hasminmax=True)
 
@@ -49,7 +50,12 @@ def put_course(connection, course_id):
     # setting up query: call update_query_looper_values module
     query = update_query("course", user_attributes_names, user_attributes_values, "COURSE_ID", course_id)
     print(f"{query}")
-    execute_query(connection, query)
+    
+    try:
+        execute_query(connection, query)
+    except Exception as e:
+        return f"value occured during executing the query: {e}"
+    
     print("put course success")
     return "put course success"
 

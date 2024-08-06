@@ -20,7 +20,6 @@ MODIFY CLASS_BLDG_ROOM CHAR(1) NULL;
 
 ALTER TABLE CLASS
 MODIFY COURSE_ID INTEGER UNSIGNED NOT NULL;
-
 /* notes 
 a class emerges after a course is created.
 if a class is a requirement, a course may generate at least one class

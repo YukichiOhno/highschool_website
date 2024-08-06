@@ -284,4 +284,31 @@ def delete_item_route(item_id):
     from modules_school.routes.item.delete_item import delete_item
     return delete_item(connection, item_id)
 
+
+# INVOICE and INVOICE_LINE
+@app.route("/api/invoice", methods=["GET"])
+def get_invoice_route():
+    from modules_school.routes.invoice.get_invoice import get_invoice
+    return get_invoice(connection)
+
+@app.route("/api/invoice", methods=["POST"])
+def post_invoice_route():
+    from modules_school.routes.invoice.post_invoice import post_invoice
+    return post_invoice(connection)
+
+@app.route("/api/pay_invoice/<int:inv_id>", methods=["PUT"])
+def pay_invoice_route(inv_id):
+    from modules_school.routes.invoice.pay_invoice import pay_invoice
+    return pay_invoice(connection, inv_id)
+
+@app.route("/api/invoice/<int:inv_id>", methods=["PUT"])
+def put_invoice_route(inv_id):
+    from modules_school.routes.invoice.put_invoice import put_invoice
+    return put_invoice(connection, inv_id)
+
+@app.route("/api/invoice/<int:inv_id>", methods=["DELETE"])
+def delete_invoice_route(inv_id):
+    from modules_school.routes.invoice.delete_invoice import delete_invoice
+    return delete_invoice(connection, inv_id)
+
 app.run(threaded=True, port=5002)

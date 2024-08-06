@@ -52,6 +52,11 @@ def put_guide(connection, guid_id):
     # setting up query: call update_query_looper_values module
     query = update_query("guide", user_attributes_names, user_attributes_values, "GUID_ID", guid_id)
     print(f"{query}")
-    execute_query(connection, query)
+    
+    try:
+        execute_query(connection, query)
+    except Exception as e:
+        return f"value occured during executing the query: {e}"
+    
     print("put guide success")
     return "put guide success"

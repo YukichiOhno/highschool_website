@@ -102,6 +102,8 @@ def validate_attribute(attribute_name, request_data, array_attribute_names, arra
                     
             array_attribute_names.append(attribute_name)
             array_attribute_values.append(attribute_value)
+
+            return attribute_name, attribute_value
             
         else:
             # value validation
@@ -122,9 +124,13 @@ def validate_attribute(attribute_name, request_data, array_attribute_names, arra
                     raise ValueError(f"{attribute_name} must be less than {max} characters long")
                 
             array_attribute_names.append(attribute_name)
-            array_attribute_values.append(attribute_value)   
+            array_attribute_values.append(attribute_value)
+
+            return attribute_name, attribute_value   
     else:
         pass
+
+        # note: return statements for this function is only necessary when the values are sought to be stored in a varaible; otherwise, ignore
 
 
 # validating associative tables based on their PK/FK

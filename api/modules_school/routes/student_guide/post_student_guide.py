@@ -61,12 +61,22 @@ def post_student_guide(connection):
     if request.method == "POST":
         query = insert_query("student_guide", user_attributes_names, user_attributes_values)
         print(f"{query}")
-        execute_query(connection, query)
+
+        try:
+            execute_query(connection, query)
+        except Exception as e:
+            return f"value occured during executing the query: {e}"
+        
         print("post student_guide success")
         return "post student_guide success"
     else:
         query = update_query("student_guide", user_attributes_names, user_attributes_values, "STUD_ID", stud_id, iscomposite=True, pk_name_2="GUID_ID", entity_id_2=guid_id)
         print(f"{query}")
-        execute_query(connection, query)
+
+        try:
+            execute_query(connection, query)
+        except Exception as e:
+            return f"value occured during executing the query: {e}"
+
         print("put student_guide success")
         return "put student_guide success"

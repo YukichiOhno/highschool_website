@@ -51,6 +51,11 @@ def put_budget(connection, bud_id):
     # setting up query: call update_query_looper_values module
     query = update_query("budget", user_attributes_names, user_attributes_values, "BUD_ID", bud_id)
     print(f"{query}")
-    execute_query(connection, query)
+    
+    try:
+        execute_query(connection, query)
+    except Exception as e:
+        return f"value occured during executing the query: {e}"
+
     print("put budget success")
     return "put budget success"

@@ -35,6 +35,7 @@ def entity_attributes_provider(entity):
         required_attributes = ["COURSE_NAME",
                                "COURSE_DESC",
                                "COURSE_TYPE",
+                               "COURSE_HRS",
                                "COURSE_GRADE_LVL"]
         
     elif entity == "supplier":
@@ -99,17 +100,23 @@ def entity_attributes_provider(entity):
     elif entity == "inventory":
         required_attributes = ["INVT_NAME",
                                "INVT_DESC",
-                               "INVT_CATEGORY",
-                               "INVT_QTY"]
+                               "INVT_CATEGORY"]
         
-        optional_attributes = ["INVT_EXP_DATE"]
+        optional_attributes = ["INVT_EXP_DATE",
+                               "INVT_QTY"]
 
     elif entity == "item":
         required_attributes = ["ITEM_QTY",
                                "ROOM_NUM",
                                "DEPT_CODE",
                                "INVT_CODE"]
-
+        
+    elif entity == "invoice":
+        required_attributes = ["INV_ISSUE_DATE",
+                               "INV_DUE_DATE",
+                               "DEPT_CODE",
+                               "SUPP_ID"]
+        
 
     allowed_attributes = required_attributes + optional_attributes
     return required_attributes, allowed_attributes
@@ -180,6 +187,9 @@ def attribute_options(attribute_name):
                              "event supply",
                              "musical instrument",
                              "miscellaneous"]
+        
+    elif attribute_name == "inv_pay_status":
+        acceptable_values = ["completed"]
         
     return acceptable_values
 
