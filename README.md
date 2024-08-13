@@ -11,6 +11,7 @@ In terms of transactions, "/api/pay_invoice" is the only route that involves the
 # setting up the application
 the database server is my computer, so hopefully the api can run while my PC is on. 
 set these commands up in the terminal: 
+
 pip install mysql-connector-python
 
 pip install --upgrade pip
